@@ -83,16 +83,14 @@ $side-padding-sm: 1rem;
 }
 
 .post-list {
-  display: flex;
+  display: grid;
   justify-content: space-between;
+  grid-template-columns: repeat(auto-fill,minmax(400px,1fr));
+  grid-auto-rows: minmax(200px,auto);
+  grid-gap: 20px;
   flex-wrap: wrap;
-  .post-link {
-    margin-top: 5%;
-    width: 47.5%;
-    @include mq(sm) {
-      margin-top: 1.3rem;
-      width: 100%;
-    }
+  @include mq(sm) {
+    grid-template-columns: repeat(auto-fill,minmax(250px,1fr));
   }
 }
 .post-list-load {
