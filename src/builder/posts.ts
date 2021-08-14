@@ -1,7 +1,11 @@
 import fs from "fs-extra";
 import Parser from "rss-parser";
-import { members } from "../../members";
 import { PostItem, Member } from "../types";
+import fetch from "node-fetch";
+import dotenv from "dotenv";
+
+dotenv.config()
+
 export default {};
 
 type FeedItem = {
@@ -14,6 +18,8 @@ type FeedItem = {
 
 const parser = new Parser();
 let allPostItems: PostItem[] = [];
+
+const MEMBERS_API_PATH = process.env.MEMBERS_API_PATH as string
 
 async function fetchFeedItems(url: string) {
   const feed = await parser.parseURL(url);
@@ -71,11 +77,16 @@ async function getMemberFeedItems(member: Member): Promise<PostItem[]> {
 }
 
 (async function () {
-  for (const member of members) {
+  const res = await fetch(MEMBERS_API_PATH)
+  const members = await res.json();
+
+  fs.ensureDirSync(".contents");
+  fs.writeJsonSync(".contents/members.json", members);
+
+  for (const member of members as unknown as Member[]) {
     const items = await getMemberFeedItems(member);
     if (items) allPostItems = [...allPostItems, ...items];
   }
   allPostItems.sort((a, b) => b.dateMiliSeconds - a.dateMiliSeconds);
-  fs.ensureDirSync(".contents");
   fs.writeJsonSync(".contents/posts.json", allPostItems);
 })();
