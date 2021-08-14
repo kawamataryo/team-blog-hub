@@ -18,4 +18,5 @@ export type PostItem = {
   contentSnippet?: string;
   isoDate?: string;
   dateMiliSeconds: number;
+  ogImageURL: string;
 };

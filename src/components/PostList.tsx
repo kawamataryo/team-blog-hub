@@ -14,7 +14,7 @@ import {
 dayjs.extend(relativeTime);
 
 const PostLink: React.FC<{ item: PostItem }> = (props) => {
-  const { authorName, title, isoDate, link, dateMiliSeconds } = props.item;
+  const { authorName, title, isoDate, link, dateMiliSeconds, ogImageURL } = props.item;
   const member = getMemberByName(authorName);
   if (!member) return null;
 
@@ -22,6 +22,9 @@ const PostLink: React.FC<{ item: PostItem }> = (props) => {
 
   return (
     <article className="post-link">
+      <a href={link} >
+        <img className="post-link__og-image" src={ogImageURL} alt={title}/>
+      </a>
       <Link href={getMemberPath(member.name)} passHref>
         <a className="post-link__author">
           <img

@@ -51,10 +51,7 @@ $side-padding-sm: 1rem;
   color: var(--color-base-text-lighter);
   font-size: 12px;
   display: flex;
-  align-items: center;
-}
-.post-link__site-favicon {
-  border-radius: 3px;
+  align-items: center; } .post-link__site-favicon { border-radius: 3px;
   margin-right: 6px;
 }
 .post-link__new-label {
@@ -105,3 +102,12 @@ $side-padding-sm: 1rem;
   color: var(--color-base-text-lighter);
   overflow-anchor: none;
 }
+.post-link__og-image {
+    height: 237px;
+    width: 100%;
+    object-fit: cover;
+    @include mq(sm) {
+      height: 168px;
+    }
+}
+

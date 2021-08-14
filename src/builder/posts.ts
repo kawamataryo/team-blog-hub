@@ -3,6 +3,7 @@ import Parser from "rss-parser";
 import { PostItem, Member } from "../types";
 import fetch from "node-fetch";
 import dotenv from "dotenv";
+import ogs from "open-graph-scraper"
 
 dotenv.config()
 
@@ -14,6 +15,7 @@ type FeedItem = {
   contentSnippet?: string;
   isoDate?: string;
   dateMiliSeconds: number;
+  ogImageURL: string;
 };
 
 const parser = new Parser();
@@ -21,22 +23,34 @@ let allPostItems: PostItem[] = [];
 
 const MEMBERS_API_PATH = process.env.MEMBERS_API_PATH as string
 
+async function getOgImageURL(url?: string) {
+  if(!url) {
+    return ""
+  }
+
+  const data = await ogs({url})
+  return data.result?.ogImage?.url || ""
+}
+
 async function fetchFeedItems(url: string) {
   const feed = await parser.parseURL(url);
   if (!feed?.items?.length) return [];
-
   // return item which has title and link
-  return feed.items
-    .map(({ title, contentSnippet, link, isoDate }) => {
+  const feedItems =  await Promise.all(feed.items
+    .map(async ({ title, contentSnippet, link, isoDate }) => {
+
+      const ogImageURL = await getOgImageURL(link)
+
       return {
         title,
         contentSnippet: contentSnippet?.replace(/\n/g, ""),
         link,
         isoDate,
         dateMiliSeconds: isoDate ? new Date(isoDate).getTime() : 0,
+        ogImageURL: ogImageURL
       };
-    })
-    .filter(({ title, link }) => title && link) as FeedItem[];
+    }))
+  return feedItems.filter(({ title, link }) => title && link) as FeedItem[];
 }
 
 async function getFeedItemsFromSources(sources: undefined | string[]) {
