@@ -93,8 +93,9 @@ const Page: NextPage<Props> = (props) => {
 
 export const getStaticProps: GetStaticProps<Props> = async ({ params }) => {
   const name = params?.name as string;
-  const member = getMemberByName(name);
-  const postItems = getMemberPostsByName(name);
+  const decodeName = decodeURIComponent(name);
+  const member = getMemberByName(decodeName);
+  const postItems = getMemberPostsByName(decodeName);
 
   if (!member) throw "User not found";
 
@@ -107,9 +108,7 @@ export const getStaticProps: GetStaticProps<Props> = async ({ params }) => {
 };
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const memberNameList = members.map((member) =>
-    encodeURIComponent(member.name)
-  );
+  const memberNameList = members.map((member) => member.name);
   const paths = memberNameList.map((name) => {
     return {
       params: {
